@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([["2010"],{6354(e){e.exports=JSON.parse('{"authors":[{"name":"NABOUDJA Tchapo Joseph","title":"Developer","url":"https://github.com/Brayden-Code-4","imageURL":"https://github.com/Brayden-Code-4.png","key":"joseph","page":null,"count":1}]}')}}]);
