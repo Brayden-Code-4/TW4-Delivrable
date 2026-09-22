@@ -3,18 +3,18 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen?logo=node.js)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker)](https://www.docker.com/)
-[![CI](https://github.com/Brayden-Code-4/TW4/actions/workflows/ci.yml/badge.svg)](https://github.com/Brayden-Code-4/TW4/actions/workflows/ci.yml)
-[![Docs](https://github.com/Brayden-Code-4/TW4/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/Brayden-Code-4/TW4/actions/workflows/deploy-docs.yml)
+[![CI](https://github.com/Brayden-Code-4/TW4-Delivrable/actions/workflows/ci.yml/badge.svg)](https://github.com/Brayden-Code-4/TW4-Delivrable/actions/workflows/ci.yml)
+[![Docs](https://github.com/Brayden-Code-4/TW4-Delivrable/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/Brayden-Code-4/TW4-Delivrable/actions/workflows/deploy-docs.yml)
 
 **TW4 is our group's task API. This repository is the codebase we document.** It is not Appwrite, n8n, or another hosted product. You clone this repo, you start the process, you call HTTP.
 
 This README explain how to get it running on your machine in a few minutes, with Node or Docker.
 
-Repo: [github.com/Brayden-Code-4/TW4](https://github.com/Brayden-Code-4/TW4)
+Repo: [github.com/Brayden-Code-4/TW4-Delivrable](https://github.com/Brayden-Code-4/TW4-Delivrable)
 
-Live docs: [brayden-code-4.github.io/TW4](https://brayden-code-4.github.io/TW4/)
+Live docs: [brayden-code-4.github.io/TW4-Delivrable](https://brayden-code-4.github.io/TW4-Delivrable/)
 
-If that URL is 404, open [Settings → Pages](https://github.com/Brayden-Code-4/TW4/settings/pages) and set **Deploy from a branch** → `gh-pages` / `/` (or **GitHub Actions**). The workflow already publishes the site on every push to `main`.
+If that URL is 404, open [Settings → Pages](https://github.com/Brayden-Code-4/TW4-Delivrable/settings/pages) and set **Deploy from a branch** → `gh-pages` / `/` (or **GitHub Actions**). The workflow already publishes the site on every push to `main`.
 
 ## Overview
 
@@ -63,7 +63,7 @@ You want Node `v20` or higher. Skip the Docker checks if you run it natively.
 ### 1. Clone
 
 ```bash
-git clone https://github.com/Brayden-Code-4/TW4.git
+git clone https://github.com/Brayden-Code-4/TW4-Delivrable.git
 cd TW4
 ```
 

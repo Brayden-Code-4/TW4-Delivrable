@@ -1,6 +1,6 @@
 # TW4 docs
 
-Docusaurus source for the live site: [brayden-code-4.github.io/TW4](https://brayden-code-4.github.io/TW4/).
+Docusaurus source for the live site: [brayden-code-4.github.io/TW4-Delivrable](https://brayden-code-4.github.io/TW4-Delivrable/).
 
 ```bash
 cd website

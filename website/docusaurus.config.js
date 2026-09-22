@@ -12,10 +12,10 @@ const config = {
   },
 
   url: 'https://brayden-code-4.github.io',
-  baseUrl: '/TW4/',
+  baseUrl: '/TW4-Delivrable/',
 
   organizationName: 'Brayden-Code-4',
-  projectName: 'TW4',
+  projectName: 'TW4-Delivrable',
   trailingSlash: false,
 
   onBrokenLinks: 'throw',
@@ -37,7 +37,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/Brayden-Code-4/TW4/tree/main/website/',
+          editUrl: 'https://github.com/Brayden-Code-4/TW4-Delivrable/tree/main/website/',
         },
         blog: {
           showReadingTime: true,
@@ -97,7 +97,7 @@ const config = {
             position: 'left',
           },
           {
-            href: 'https://github.com/Brayden-Code-4/TW4',
+            href: 'https://github.com/Brayden-Code-4/TW4-Delivrable',
             label: 'GitHub',
             position: 'right',
           },
@@ -124,7 +124,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/Brayden-Code-4/TW4',
+                href: 'https://github.com/Brayden-Code-4/TW4-Delivrable',
               },
             ],
           },

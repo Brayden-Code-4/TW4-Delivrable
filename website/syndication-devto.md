@@ -1,7 +1,7 @@
 ---
 title: You don't need Postgres to track a writing backlog
 tags: node, docker, api, documentation
-canonical_url: https://brayden-code-4.github.io/TW4/blog/no-database-task-api
+canonical_url: https://brayden-code-4.github.io/TW4-Delivrable/blog/no-database-task-api
 ---
 
 Paste this file into Dev.to, Hashnode or Medium. Keep the canonical URL so the Docusaurus post remains the main copy. The PDF asks for a draft prepared for syndication; a public post is better if you have an account.
@@ -16,7 +16,7 @@ That stack is fine when you have users and backups. It is not fine when you just
 
 TW4 is the other extreme on purpose: Node's `http` module, no npm dependencies at runtime, one JSON file on disk. The process stays simple enough that the README, the install guide and the API pages can tell the same story.
 
-Repo: [github.com/Brayden-Code-4/TW4](https://github.com/Brayden-Code-4/TW4).
+Repo: [github.com/Brayden-Code-4/TW4-Delivrable](https://github.com/Brayden-Code-4/TW4-Delivrable).
 
 ## What "no database" actually means
 
@@ -53,7 +53,7 @@ Two details that ate time when I documented the API:
 Node 20 or newer. Copy `.env.example` to `.env` and replace the example key with yours if you share the machine.
 
 ```bash
-git clone https://github.com/Brayden-Code-4/TW4.git
+git clone https://github.com/Brayden-Code-4/TW4-Delivrable.git
 cd TW4
 cp .env.example .env
 npm install
@@ -112,8 +112,8 @@ The same idea applies to auth. Show the 401 body. Show the 500 body when `API_KE
 
 ## Links
 
-- [Canonical post on the docs site](https://brayden-code-4.github.io/TW4/blog/no-database-task-api)
-- [Quickstart](https://brayden-code-4.github.io/TW4/docs/quickstart)
-- [Installation](https://brayden-code-4.github.io/TW4/docs/installation)
-- [API overview](https://brayden-code-4.github.io/TW4/docs/api/overview)
-- [Code reference](https://brayden-code-4.github.io/TW4/docs/developer/code-reference)
+- [Canonical post on the docs site](https://brayden-code-4.github.io/TW4-Delivrable/blog/no-database-task-api)
+- [Quickstart](https://brayden-code-4.github.io/TW4-Delivrable/docs/quickstart)
+- [Installation](https://brayden-code-4.github.io/TW4-Delivrable/docs/installation)
+- [API overview](https://brayden-code-4.github.io/TW4-Delivrable/docs/api/overview)
+- [Code reference](https://brayden-code-4.github.io/TW4-Delivrable/docs/developer/code-reference)

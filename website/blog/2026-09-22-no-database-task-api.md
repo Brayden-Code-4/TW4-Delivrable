@@ -17,7 +17,7 @@ That stack is fine when you have users and backups. It is not fine when you just
 
 TW4 is the other extreme on purpose: Node's `http` module, no npm dependencies at runtime, one JSON file on disk. The process stays simple enough that the README, the install guide and the API pages can tell the same story.
 
-Repo: [github.com/Brayden-Code-4/TW4](https://github.com/Brayden-Code-4/TW4).
+Repo: [github.com/Brayden-Code-4/TW4-Delivrable](https://github.com/Brayden-Code-4/TW4-Delivrable).
 
 ## What "no database" actually means
 
@@ -73,7 +73,7 @@ Two details that ate time when I documented the API:
 Node 20 or newer. Copy `.env.example` to `.env` and replace the example key with yours if you share the machine.
 
 ```bash
-git clone https://github.com/Brayden-Code-4/TW4.git
+git clone https://github.com/Brayden-Code-4/TW4-Delivrable.git
 cd TW4
 cp .env.example .env
 npm install
