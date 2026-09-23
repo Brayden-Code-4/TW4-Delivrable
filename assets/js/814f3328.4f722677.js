@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([["1833"],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"You don\'t need Postgres to track a writing backlog","permalink":"/TW4-Delivrable/blog/no-database-task-api","unlisted":false,"date":"2026-09-22T00:00:00.000Z"}]}')}}]);

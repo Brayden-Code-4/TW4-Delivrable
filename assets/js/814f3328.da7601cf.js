@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([["1833"],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"The OPNsense API is the same door the GUI already uses","permalink":"/TW4-Delivrable/blog/opnsense-api-same-as-gui","unlisted":false,"date":"2026-09-22T00:00:00.000Z"}]}')}}]);
