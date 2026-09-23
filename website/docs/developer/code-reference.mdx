@@ -3,76 +3,29 @@ sidebar_position: 4
 title: Code reference
 ---
 
-# Code reference (`src/server.js`)
+# Code reference (`opnsense/core`)
 
-One file, Node `http`, no Express. Useful bits if you read the source or change it.
+We do not vendor the firewall in this repo. The product sources are [github.com/opnsense/core](https://github.com/opnsense/core). Architecture overview: [docs.opnsense.org/development/architecture.html](https://docs.opnsense.org/development/architecture.html).
 
-## Entry
+## Where the API lives
 
-`loadEnvFile` fills `process.env` from `.env` only when the key is missing. Then:
+API controllers sit under `src/opnsense/mvc/app/controllers/OPNsense/*/Api/`. A GUI action that hits `/api/core/firmware/status` is a method on the firmware API controller.
 
-| Const | Source |
-| --- | --- |
-| `PORT` | `PORT` or `3000` |
-| `HOST` | `HOST` or `0.0.0.0` |
-| `API_KEY` | `API_KEY` or `""` |
-| `DATA_FILE` | `DATA_FILE` or `data/tasks.json` |
-| `STATUSES` | `todo`, `doing`, `done` |
+The web UI and the public API share those classes. That is why the official advice is: open the GUI, F12, filter `/api/`.
 
-`ensureStore()` creates the folder and an empty `[]` file if needed.
+## Verbs
 
-## Responses
+Documented product rule:
 
-`send(res, status, body)` always JSON. Extra header: `X-TW4-Version: 1.0.0`.
+- **GET** — retrieve
+- **POST** — create, update, or run an action
 
-## Auth
+There is no separate PATCH/DELETE vocabulary on most core routes. A delete in the GUI is usually a POST to a `del` / `delete_*` command.
 
-`requireApiKey`:
+## Config and backend
 
-- no `API_KEY` in env → `500` `server_misconfigured`
-- header ≠ key → `401` `unauthorized`
+`configd` runs backend scripts. MVC models describe XML config. You do not edit `config.xml` by hand if you can call the API or the GUI.
 
-Used on POST, PATCH, PUT, DELETE. GET is open.
+## What we do not copy
 
-## Validation
-
-`validateTaskInput(body, { partial })`:
-
-- create: `title` required, non-empty string
-- patch: `title` optional, but if present it cannot be blank
-- `status` if present must be in `STATUSES`
-
-Bad body → `400` `validation_error`. Broken JSON → `400` `invalid_json`.
-
-## Routes
-
-| Method | Path | Notes |
-| --- | --- | --- |
-| `GET` | `/health` | `status`, `service`, `environment`, `uptime_seconds` |
-| `GET` | `/api/v1/tasks` | Optional `?status=` |
-| `GET` | `/api/v1/tasks/:id` | `:id` must match a UUID regex |
-| `POST` | `/api/v1/tasks` | `201`, default status `todo` |
-| `PATCH` / `PUT` | `/api/v1/tasks/:id` | Same handler |
-| `DELETE` | `/api/v1/tasks/:id` | `{ data, deleted: true }` |
-
-If the id does not match `[0-9a-fA-F-]{36}`, the request never enters the task handler and you get a generic `404` (`No route for …`).
-
-`GET /api/v1/tasks?status=foo` → `400` `invalid_query`.
-
-## Store
-
-`loadTasks` / `saveTasks` read and write the JSON file on every request. Fine for local use. Do not point two processes at the same file and expect locks. There are none.
-
-## Task shape
-
-```json
-{
-  "id": "78cb84f4-f939-4729-8c7b-2e3fddedd05b",
-  "title": "Write the user guide",
-  "status": "todo",
-  "createdAt": "2026-09-20T17:50:54.691Z",
-  "updatedAt": "2026-09-20T17:50:54.691Z"
-}
-```
-
-`id` is `crypto.randomUUID()`. Timestamps are `toISOString()`.
+We do not paste thousands of generated endpoint rows. The generated index is [API Reference](https://docs.opnsense.org/development/api.html). This site keeps the five routes we actually walk in the [API section](/docs/api/overview).

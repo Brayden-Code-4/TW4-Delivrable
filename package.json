@@ -2,7 +2,7 @@
   "name": "tw4",
   "version": "1.0.0",
   "private": true,
-  "description": "TW4 is a lightweight REST API for tracking documentation tasks.",
+  "description": "Documentation site for OPNsense (TW4 group handbook).",
   "main": "src/server.js",
   "engines": {
     "node": ">=20"

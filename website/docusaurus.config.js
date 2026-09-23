@@ -3,8 +3,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'TW4',
-  tagline: "Our group's task API — this is the codebase we document",
+  title: 'OPNsense',
+  tagline: 'Open-source firewall — this is the platform we document',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -64,9 +64,9 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'TW4',
+        title: 'OPNsense',
         logo: {
-          alt: 'TW4',
+          alt: 'OPNsense',
           src: 'img/logo.svg',
         },
         items: [
@@ -129,7 +129,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} TW4 Authors.`,
+        copyright: `Copyright © ${new Date().getFullYear()} TW4 docs authors. OPNsense is a trademark of Deciso B.V.`,
       },
       prism: {
         theme: prismThemes.github,

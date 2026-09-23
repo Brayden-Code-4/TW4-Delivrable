@@ -5,39 +5,39 @@ title: Overview
 
 # Developer guide
 
-This section explains how to hook TW4 into your own code. There is no official SDK. You talk HTTP and JSON.
+This section explains how to hook a script into OPNsense. There is no official npm SDK. You talk HTTPS and JSON. The GUI uses the same `/api/` routes.
 
-If you only want to click around with curl, use the [User guide](/docs/user-guide). This part is for people who write a client or change the server.
+If you only want the web UI, use the [User guide](/docs/user-guide).
 
-## What we asked NABOUDJA Tchapo Joseph
+## What we asked after reading the source docs
 
-Subject-matter interview with **NABOUDJA Tchapo Joseph** ([Brayden-Code-4](https://github.com/Brayden-Code-4)), who maintains `src/server.js` on this repo. Seven questions, short answers.
+Subject-matter notes: **NABOUDJA Tchapo Joseph**, after the official [API how-to](https://docs.opnsense.org/development/how-tos/api.html) and the architecture pages.
 
 **What is this API for?**  
-Keep a writing backlog as tasks. Not a full project manager. Title + status, that's it.
+Anything the MVC GUI already does: firmware, services, users, firewall objects. Path shape: `/api/<module>/<controller>/<command>/`.
 
 **What do I need first?**  
-Node 20+ (or Docker), a `.env` with `API_KEY`, and the server running on port 3000. Reads work without a key. Writes do not.
+A running appliance, a user with the right privileges, and a key/secret pair. Reads and writes both use HTTP Basic. There is no open GET.
 
 **Is there an SDK?**  
-No. `fetch` in Node 20, or `urllib` in Python. Wrap it yourself if you call it a lot. See [Integrate](/docs/developer/integrate).
+No first-party Node SDK. Python `requests` is what the official how-to shows. `curl` and `fetch` work the same: `-u key:secret`.
 
 **What are the defaults?**  
-`HOST=0.0.0.0`, `PORT=3000`, `status=todo` when you omit it, `DATA_FILE=./data/tasks.json`, `LOG_LEVEL=info`. Empty `API_KEY` is a `500`, not a silent open API.
+LAN `192.168.1.1`, self-signed TLS, verbs **GET** (read) and **POST** (write or action). The generated tables sometimes list POST on a path the how-to calls with GET — check the how-to and the Network tab.
 
 **Where does it break?**  
-PowerShell mangles JSON braces. A task id that is not a UUID returns 404 (the regex never matches). Filter `?status=wip` is 400. Forgetting `X-API-Key` on POST is 401.
+`-k` forgotten on a factory cert (TLS error). Secret lost (create a new key). User has no privilege for that module (HTML login or 403). PowerShell eating the `user:pass` string — use `curl.exe`.
 
 **How do errors look?**  
-Always JSON: `{ "error": "...", "message": "..." }`. Codes: 400, 401, 404, 500. No HTML error pages.
+HTTP status plus JSON when the API controller ran. A full HTML login page means you never reached the API.
 
-**If a writer documents a route and I change it?**  
-Tell them before you push. They need the method, path, auth, and one real response. See [Working with writers](/docs/developer/writers).
+**If a writer documents a route and I change a plugin?**  
+The GUI is the contract. Open DevTools, filter `/api/`, copy method + JSON. See [Working with writers](/docs/developer/writers).
 
 ## In this section
 
-1. [Integrate](/docs/developer/integrate) — Node and Python clients
-2. [Configure](/docs/developer/configure) — env and headers
-3. [Code reference](/docs/developer/code-reference) — what `src/server.js` actually does
-4. [Extend](/docs/developer/extend) — small changes without a rewrite
+1. [Integrate](/docs/developer/integrate) — curl, JS, Python
+2. [Configure](/docs/developer/configure) — key, secret, TLS
+3. [Code reference](/docs/developer/code-reference) — where `core` lives
+4. [Extend](/docs/developer/extend) — plugins, not a rewrite
 5. [Working with writers](/docs/developer/writers)

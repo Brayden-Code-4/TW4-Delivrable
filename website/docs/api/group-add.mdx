@@ -1,0 +1,86 @@
+---
+sidebar_position: 9
+title: POST /api/auth/group/add/
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# POST /api/auth/group/add/
+
+Create an access group. Copied from the official how-to (GUI **System → Access → Groups**, then DevTools). Needs Basic auth and access to that page.
+
+## Body
+
+```json
+{
+  "group": {
+    "name": "HelloWorld",
+    "description": "HelloWorld",
+    "priv": "page-system-login-logout",
+    "member": "0"
+  }
+}
+```
+
+## Response
+
+```json
+{"result":"saved","uuid":"569118e0-006b-4a2d-8eb6-332d29300a2a"}
+```
+
+The UUID in the official page is an example. Yours will differ.
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -k -u "$OPN_KEY:$OPN_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"group":{"name":"HelloWorld","description":"HelloWorld","priv":"page-system-login-logout","member":"0"}}' \
+  https://192.168.1.1/api/auth/group/add/
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+await fetch("https://192.168.1.1/api/auth/group/add/", {
+  method: "POST",
+  headers: {
+    Authorization: "Basic " + btoa(`${key}:${secret}`),
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    group: {
+      name: "HelloWorld",
+      description: "HelloWorld",
+      priv: "page-system-login-logout",
+      member: "0",
+    },
+  }),
+});
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import requests
+requests.post(
+    "https://192.168.1.1/api/auth/group/add/",
+    auth=(key, secret),
+    json={
+        "group": {
+            "name": "HelloWorld",
+            "description": "HelloWorld",
+            "priv": "page-system-login-logout",
+            "member": "0",
+        }
+    },
+    verify=False,
+)
+```
+
+</TabItem>
+</Tabs>

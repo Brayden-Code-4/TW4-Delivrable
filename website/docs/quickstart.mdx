@@ -3,174 +3,98 @@ sidebar_position: 1
 title: Quickstart
 ---
 
-# Get a task into TW4 in 10–15 minutes
+# First GUI and first API call
 
-This tutorial walks from an empty folder to a task you can list, filter, update and delete. Follow the steps in order. Do not skip the checks.
+This tutorial walks from a downloaded ISO to one firmware-status request. Time: about **30 to 45 minutes** if the ISO is already on disk (the download itself is larger).
 
 ## What you will do
 
-When you finish, you will be able to:
-
-- run TW4 on your computer
-- call `/health`
-- create one task with an API key
-- filter the list, then PATCH, PUT and DELETE that task
-
-Time: about 10 to 15 minutes.
+- create a VirtualBox lab VM (3 GB RAM, two NICs)
+- install OPNsense from the live ISO
+- open `https://192.168.1.1/`
+- create an API key and call `GET /api/core/firmware/status`
 
 ## What you need
 
-Exact versions that work with this guide:
-
 | Tool | Version |
 | --- | --- |
-| Git | 2.40 or newer |
-| Node.js | **20.0 or newer** (21 and 24 are fine) |
-| npm | 10 or newer (it comes with Node) |
-
-Check:
-
-```bash
-git --version
-node -v
-npm -v
-```
-
-Node must print `v20` or higher.
-
-You also need a second terminal window. TW4 keeps running in the first one while you send requests in the second.
+| OPNsense **dvd** ISO (amd64) | current major from [opnsense.org/download](https://opnsense.org/download/) |
+| VirtualBox | 7 or newer |
+| Host RAM | enough to give the VM 3 GB |
 
 :::note
-This path uses Node, not Docker. For Docker, see [Installation](/docs/installation).
+There is no official Docker image. Do not look for `docker compose` in this repo. The lab path is a VM. Official virtual notes: [docs.opnsense.org/manual/virtuals.html](https://docs.opnsense.org/manual/virtuals.html).
 :::
 
-## 1. Clone the repo
+## 1. Create the VM
 
-```bash
-git clone https://github.com/Brayden-Code-4/TW4-Delivrable.git
-cd TW4
+- Type: **BSD**, version **FreeBSD (64-bit)**
+- Memory: **3072 MB**
+- Disk: **16 GB**
+- Adapter 1: Host-only or Internal (this will be LAN)
+- Adapter 2: NAT (this will be WAN, DHCP)
+
+Attach the ISO to the optical drive. Start the VM.
+
+## 2. Run the installer
+
+At the live login:
+
+```text
+installer
+opnsense
 ```
 
-You should see `README.md`, `package.json`, `src` and `website`.
+(`root` / `opnsense` is the live shell and GUI, not the installer.)
 
-## 2. Copy the env file
+Accept the keymap. Choose UFS or ZFS. Pick the virtual disk. Set a root password you will remember. Complete install and reboot. Remove the ISO so you do not boot the live system again.
+
+## 3. Open the GUI
+
+From the host (or a client on the LAN network):
+
+```text
+https://192.168.1.1/
+```
+
+Accept the certificate warning. Login `root` and the password from step 2.
+
+If the page does not load, the host is not on the LAN segment. In VirtualBox, put your host on the same Host-only network as Adapter 1.
+
+## 4. Create an API key
+
+**System → Access → Users** → `root` (or a dedicated user) → API section → **+**.
+
+Save the downloaded file. It looks like:
+
+```ini
+key=...
+secret=...
+```
+
+The secret is shown **once**. If you lose it, create another key.
+
+## 5. Call firmware status
+
+Git Bash / Linux / macOS:
 
 ```bash
-cp .env.example .env
+curl -k -u "YOUR_KEY:YOUR_SECRET" https://192.168.1.1/api/core/firmware/status
 ```
 
 PowerShell:
 
 ```powershell
-Copy-Item .env.example .env
+$pair = "YOUR_KEY:YOUR_SECRET"
+curl.exe -k -u $pair https://192.168.1.1/api/core/firmware/status
 ```
 
-Open `.env`. Leave `PORT=3000`. You can keep `API_KEY=change-me-now` for this tutorial, or replace the example key with yours.
-
-## 3. Start the API
-
-```bash
-npm install
-npm start
-```
-
-Wait until you see:
-
-```text
-TW4 API listening on http://0.0.0.0:3000
-```
-
-Do not close this terminal.
-
-## 4. Ping health
-
-In the **other** terminal:
-
-```bash
-curl http://127.0.0.1:3000/health
-```
-
-You should get something like:
-
-```json
-{"status":"ok","service":"tw4","environment":"development","uptime_seconds":2}
-```
-
-If curl fails with "connection refused", the server is not up yet. Go back to step 3.
-
-## 5. Create a task
-
-Git Bash / macOS / Linux:
-
-```bash
-curl -s -X POST http://127.0.0.1:3000/api/v1/tasks \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: change-me-now" \
-  --data-binary '{"title":"Write the user guide","status":"todo"}'
-```
-
-PowerShell (do not paste the bash JSON line, PowerShell eats the braces):
-
-```powershell
-$body = @{ title = "Write the user guide"; status = "todo" } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:3000/api/v1/tasks -ContentType "application/json" -Headers @{ "X-API-Key" = "change-me-now" } -Body $body
-```
-
-A good answer has an `id` and `"status":"todo"`. Copy the `id`.
-
-`401` means the key in the header does not match `.env`.
-
-## 6. List tasks
-
-```bash
-curl http://127.0.0.1:3000/api/v1/tasks
-```
-
-You should see `"count": 1` (or more) and your title in `data`.
-
-List is **not** authenticated. Anyone who can reach port 3000 can see the backlog. That is a local-demo choice, not a bug.
-
-## 7. Filter by status
-
-```bash
-curl "http://127.0.0.1:3000/api/v1/tasks?status=todo"
-```
-
-`?status=wip` returns `400`. Allowed values: `todo`, `doing`, `done`.
-
-## 8. Update with PATCH, then PUT
-
-Replace `<TASK_ID>` with the UUID from step 5.
-
-```bash
-curl -X PATCH http://127.0.0.1:3000/api/v1/tasks/<TASK_ID> \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: change-me-now" \
-  --data-binary '{"status":"doing"}'
-```
-
-`PUT` uses the same handler:
-
-```bash
-curl -X PUT http://127.0.0.1:3000/api/v1/tasks/<TASK_ID> \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: change-me-now" \
-  --data-binary '{"status":"done"}'
-```
-
-## 9. Delete the task
-
-```bash
-curl -X DELETE http://127.0.0.1:3000/api/v1/tasks/<TASK_ID> \
-  -H "X-API-Key: change-me-now"
-```
-
-You should see `"deleted": true`. A second GET of that id returns `404`.
+You want JSON (often a `status` field). HTML login page or `401` means the pair is wrong or the user lacks privileges.
 
 ## You are done
 
-You cloned TW4, started it, created a task, filtered, updated twice, and deleted it. Next:
+You installed a lab firewall and used the same API the GUI uses. Next:
 
-- [Installation](/docs/installation) if you want Docker or more env details
-- [User guide](/docs/user-guide) for day-to-day how-tos
-- [API reference](/docs/api/overview) for status codes and OpenAPI
+- [Installation](/docs/installation) for hardware USB and checksums
+- [User guide](/docs/user-guide) for day-to-day GUI
+- [API reference](/docs/api/overview) for more endpoints

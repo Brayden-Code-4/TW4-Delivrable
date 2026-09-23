@@ -1,14 +1,12 @@
-tw4:
-  label: TW4
-  permalink: /tw4
-  description: The TW4 task API
-
-nodejs:
-  label: Node.js
-  permalink: /nodejs
-  description: Node.js runtime
-
-docker:
-  label: Docker
-  permalink: /docker
-  description: Container install
+opnsense:
+  label: OPNsense
+  permalink: /opnsense
+  description: OPNsense firewall
+api:
+  label: API
+  permalink: /api
+  description: REST API
+firewall:
+  label: firewall
+  permalink: /firewall
+  description: Firewall and routing

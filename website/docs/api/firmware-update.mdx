@@ -1,0 +1,46 @@
+---
+sidebar_position: 8
+title: POST /api/core/firmware/update
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# POST /api/core/firmware/update
+
+Schedule a package update. Official how-to curl uses `-XPOST`. This **changes** the box. Lab only, and only after you read [firmware status](/docs/api/firmware-status).
+
+Needs Basic auth and firmware privileges.
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -X POST -k -u "$OPN_KEY:$OPN_SECRET" \
+  https://192.168.1.1/api/core/firmware/update
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+await fetch("https://192.168.1.1/api/core/firmware/update", {
+  method: "POST",
+  headers: { Authorization: "Basic " + btoa(`${key}:${secret}`) },
+});
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import requests
+requests.post(
+    "https://192.168.1.1/api/core/firmware/update",
+    auth=(key, secret),
+    verify=False,
+)
+```
+
+</TabItem>
+</Tabs>

@@ -1,0 +1,73 @@
+---
+sidebar_position: 7
+title: GET /api/core/service/search
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# GET /api/core/service/search
+
+List services. The generated table lists **GET**. The official API intro shows the GUI sending **POST** JSON to the same path (`current`, `rowCount`, `searchPhrase`) from **System → Diagnostics → Services**. Both are documented so a demo is not a surprise.
+
+Needs Basic auth.
+
+## POST body the GUI uses
+
+```json
+{"current":1,"rowCount":7,"sort":{},"searchPhrase":""}
+```
+
+## Response
+
+JSON with `total`, `rowCount`, `current`, `rows` (each row has `id`, `running`, `name`, …).
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -k -u "$OPN_KEY:$OPN_SECRET" \
+  https://192.168.1.1/api/core/service/search
+```
+
+```bash
+curl -k -u "$OPN_KEY:$OPN_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"current":1,"rowCount":7,"sort":{},"searchPhrase":""}' \
+  https://192.168.1.1/api/core/service/search
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+const res = await fetch("https://192.168.1.1/api/core/service/search", {
+  method: "POST",
+  headers: {
+    Authorization: "Basic " + btoa(`${key}:${secret}`),
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    current: 1,
+    rowCount: 7,
+    sort: {},
+    searchPhrase: "",
+  }),
+});
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import requests
+print(requests.post(
+    "https://192.168.1.1/api/core/service/search",
+    auth=(key, secret),
+    json={"current": 1, "rowCount": 7, "sort": {}, "searchPhrase": ""},
+    verify=False,
+).json()["total"])
+```
+
+</TabItem>
+</Tabs>

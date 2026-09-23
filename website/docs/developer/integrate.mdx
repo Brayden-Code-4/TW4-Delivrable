@@ -3,83 +3,51 @@ sidebar_position: 2
 title: Integrate
 ---
 
-# Integrate TW4 in an app
+# Call OPNsense from an app
 
-TW4 is one HTTP server. Point your code at `http://127.0.0.1:3000` (or whatever `PORT` you set). The helper stays small on purpose: a base URL, a key, `fetch`.
+Point your code at `https://192.168.1.1` (or your LAN IP). Auth is HTTP Basic: username = API **key**, password = API **secret**.
+
+## cURL
+
+```bash
+curl -k -u "$OPN_KEY:$OPN_SECRET" \
+  https://192.168.1.1/api/core/firmware/status
+```
 
 ## Node.js 20+
 
-No extra package. Built-in `fetch` is enough.
-
 ```js
-const BASE = process.env.TW4_URL ?? "http://127.0.0.1:3000";
-const KEY = process.env.TW4_API_KEY ?? "change-me-now";
+const BASE = process.env.OPN_URL ?? "https://192.168.1.1";
+const key = process.env.OPN_KEY;
+const secret = process.env.OPN_SECRET;
 
-async function createTask(title, status = "todo") {
-  const res = await fetch(`${BASE}/api/v1/tasks`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": KEY,
-    },
-    body: JSON.stringify({ title, status }),
-  });
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(`${res.status} ${json.error}: ${json.message}`);
-  }
-  return json.data;
-}
-
-const task = await createTask("Draft the SDK notes");
-console.log(task.id);
+const res = await fetch(`${BASE}/api/core/firmware/status`, {
+  headers: {
+    Authorization: "Basic " + Buffer.from(`${key}:${secret}`).toString("base64"),
+  },
+});
+const json = await res.json();
 ```
 
-List:
+Lab only: Node will reject the factory certificate unless you set `NODE_TLS_REJECT_UNAUTHORIZED=0` (never in production) or trust a real cert.
 
-```js
-const res = await fetch(`${BASE}/api/v1/tasks?status=todo`);
-const { data, count } = await res.json();
-```
+## Python
 
-## Python 3 (stdlib only)
+Official how-to uses `requests`:
 
 ```python
-import json
-import os
-import urllib.error
-import urllib.request
+import requests
 
-BASE = os.environ.get("TW4_URL", "http://127.0.0.1:3000")
-KEY = os.environ.get("TW4_API_KEY", "change-me-now")
-
-
-def create_task(title, status="todo"):
-    req = urllib.request.Request(
-        f"{BASE}/api/v1/tasks",
-        data=json.dumps({"title": title, "status": status}).encode(),
-        headers={
-            "Content-Type": "application/json",
-            "X-API-Key": KEY,
-        },
-        method="POST",
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.load(resp)["data"]
-
-
-print(create_task("Draft the SDK notes")["id"])
+url = "https://192.168.1.1/api/core/firmware/status"
+r = requests.get(url, auth=(key, secret), verify=False)  # verify=False: lab
+print(r.status_code, r.text[:200])
 ```
 
-`urllib` raises on 4xx. Catch `urllib.error.HTTPError` and read `e.read()` if you want the JSON body.
+Prefer `verify="OPNsense.pem"` when you exported the cert.
 
-## Browser
+## Checklist
 
-Same `fetch` as Node. Do not put the real `API_KEY` in frontend code you ship to the internet. For a local demo it's fine. For anything public, hide writes behind your own backend. List endpoints have no auth; treat the process as local-only.
-
-## Checklist before you wire a client
-
-1. `GET /health` returns `"status":"ok"`
-2. Writes send `Content-Type: application/json` **and** `X-API-Key`
-3. Task ids in `PATCH` / `DELETE` / `GET /tasks/:id` are full UUIDs (36 chars)
-4. You treat 401 as "key", 400 as "your payload", 404 as "id or path"
+1. GUI login works on the same host
+2. The user has privileges for **System → Firmware** (or whichever page owns the route)
+3. You send Basic auth, not `X-API-Key`
+4. POST bodies are JSON when the GUI sends JSON

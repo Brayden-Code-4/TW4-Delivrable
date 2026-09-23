@@ -17,13 +17,14 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <p className={styles.heroLead}>
-          TW4 is our group&apos;s task API. This is the codebase we document.
+          OPNsense is the platform we document. This repo is our group&apos;s
+          docs site, not a fork of the firewall sources.
         </p>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/quickstart">
-            Quickstart (10–15 min)
+            Quickstart (lab VM)
           </Link>
           <Link
             className="button button--outline button--secondary button--lg"
@@ -41,7 +42,7 @@ export default function Home() {
   return (
     <Layout
       title={siteConfig.title}
-      description="TW4 is our group's task API. Clone it, run it locally, call HTTP.">
+      description="OPNsense is the platform we document: install a lab firewall and call the REST API.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

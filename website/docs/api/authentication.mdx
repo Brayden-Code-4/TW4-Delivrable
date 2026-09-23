@@ -5,22 +5,16 @@ title: Authentication
 
 # Authentication
 
-TW4 does not use OAuth or JWT. One shared secret: `API_KEY` in `.env`, sent as header `X-API-Key`.
+OPNsense does not use a single `X-API-Key` header. You create a key/secret pair on a **user**. curl sends them as HTTP Basic.
 
-GET `/health` and GET `/api/v1/tasks` (list and one item) do not check it. That is a local-demo choice: anyone who reaches the port can read the backlog. POST, PATCH, PUT and DELETE do check the key.
-
-The examples below use the default key. Replace it with your own if you changed `.env`.
-
-```http
-X-API-Key: change-me-now
+```bash
+curl -k -u "KEY:SECRET" https://192.168.1.1/api/core/firmware/status
 ```
 
-If the header does not match, you get `401`:
+In Postman: Authorization type **Basic Auth**, username = key, password = secret.
 
-```json
-{"error":"unauthorized","message":"Missing or invalid X-API-Key header."}
-```
+The pair is not the same as the `root` GUI password. You generate it under **System → Access → Users**. The secret is not stored for a second download.
 
-If `API_KEY` is empty on the server, writes return `500` (`server_misconfigured`). The API will not accept writes with no key at all.
+The user must be allowed to open the GUI page that owns the endpoint (Effective Privileges).
 
-Do not put the key in the query string. The server never reads `?api_key=`.
+Do not put the secret in the query string. The server expects Basic auth.

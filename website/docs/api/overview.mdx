@@ -3,39 +3,36 @@ sidebar_position: 1
 title: Overview
 ---
 
-# TW4 API
+# OPNsense API
 
-This page describes the HTTP API as it is in `src/server.js` today. Base URL on your machine: `http://127.0.0.1:3000`. JSON in, JSON out. Version header on every response: `X-TW4-Version: 1.0.0`. Machine-readable spec: [OpenAPI YAML](/docs/api/openapi).
+This page describes the HTTP API as documented by the project: [API reference](https://docs.opnsense.org/development/api.html) and [Use the API](https://docs.opnsense.org/development/how-tos/api.html).
 
-There is no hosted cloud. You run the process, then you call it.
+Base URL on a default lab box: `https://192.168.1.1`. JSON in and out. Path:
 
-## What exists
+```text
+/api/<module>/<controller>/<command>/[<param>/...]
+```
 
-| Method | Path | Auth |
+Verbs: **GET** (read), **POST** (write or action).
+
+## Routes we walk here
+
+| Method | Path | Notes |
 | --- | --- | --- |
-| `GET` | [`/health`](/docs/api/health) | No |
-| `GET` | [`/api/v1/tasks`](/docs/api/list-tasks) | No |
-| `GET` | [`/api/v1/tasks/{id}`](/docs/api/get-task) | No |
-| `POST` | [`/api/v1/tasks`](/docs/api/create-task) | `X-API-Key` |
-| `PATCH` / `PUT` | [`/api/v1/tasks/{id}`](/docs/api/update-task) | `X-API-Key` |
-| `DELETE` | [`/api/v1/tasks/{id}`](/docs/api/delete-task) | `X-API-Key` |
+| `GET` | [`/api/core/firmware/status`](/docs/api/firmware-status) | How-to example |
+| `GET` | [`/api/core/system/status`](/docs/api/system-status) | System controller |
+| `GET` | [`/api/core/service/search`](/docs/api/service-search) | Service list (GUI grids often POST JSON) |
+| `POST` | [`/api/core/firmware/update`](/docs/api/firmware-update) | Start package update |
+| `POST` | [`/api/auth/group/add/`](/docs/api/group-add) | Create a group (from the official how-to) |
 
-Task object:
+Machine-readable subset: [OpenAPI](/docs/api/openapi).
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `id` | string (UUID) | Set by the server |
-| `title` | string | Required on create |
-| `status` | string | `todo` \| `doing` \| `done` |
-| `createdAt` | string | ISO 8601 |
-| `updatedAt` | string | ISO 8601 |
-
-List responses wrap rows in `{ "data": [...], "count": n }`. One task is `{ "data": { ... } }`.
+The generated core index has many more modules (firewall, unbound, wireguard, …). We do not copy that table.
 
 ## Auth
 
-See [Authentication](/docs/api/authentication). Reads are open. Writes need the key.
+HTTP Basic: API **key** as username, **secret** as password. See [Authentication](/docs/api/authentication).
 
 ## Errors
 
-See [Status codes](/docs/api/status-codes). Bodies look like `{ "error": "unauthorized", "message": "..." }`.
+See [Status codes](/docs/api/status-codes).

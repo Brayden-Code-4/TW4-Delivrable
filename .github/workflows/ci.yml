@@ -7,35 +7,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  api:
+  docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: API checks
-        run: npm test
-
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build image, run process, hit /health
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - name: Build docs
+        working-directory: website
         run: |
-          docker build -t tw4-api:ci .
-          docker run -d --name tw4 -p 3000:3000 -e API_KEY=ci-key tw4-api:ci
-          ok=0
-          for i in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:3000/health; then
-              ok=1
-              break
-            fi
-            sleep 1
-          done
-          if [ "$ok" != "1" ]; then
-            docker logs tw4
-            docker stop tw4 || true
-            exit 1
-          fi
-          docker stop tw4
+          npm ci
+          npm run build

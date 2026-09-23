@@ -1,0 +1,47 @@
+---
+sidebar_position: 6
+title: GET /api/core/system/status
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# GET /api/core/system/status
+
+System status from the core **System** controller ([generated table](https://docs.opnsense.org/development/api/core/core.html)). Needs Basic auth.
+
+## Response `200`
+
+JSON status payload for the running system. Use this as a liveness check after firmware status.
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -k -u "$OPN_KEY:$OPN_SECRET" \
+  https://192.168.1.1/api/core/system/status
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+const res = await fetch("https://192.168.1.1/api/core/system/status", {
+  headers: { Authorization: "Basic " + btoa(`${key}:${secret}`) },
+});
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import requests
+print(requests.get(
+    "https://192.168.1.1/api/core/system/status",
+    auth=(key, secret),
+    verify=False,
+).status_code)
+```
+
+</TabItem>
+</Tabs>

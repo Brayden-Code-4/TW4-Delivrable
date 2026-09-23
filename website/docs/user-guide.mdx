@@ -3,57 +3,47 @@ sidebar_position: 3
 title: User guide
 ---
 
-# Use the TW4 API
+# Use OPNsense day to day
 
-How-to page. The API is already running (see [Installation](/docs/installation)). For method tables, status codes and OpenAPI, use the [API reference](/docs/api/overview) — do not demo both pages in a row; they repeat the same curls.
+How-to page. The firewall is already installed ([Installation](/docs/installation)). Endpoint tables live in the [API reference](/docs/api/overview). Do not demo both in a row.
 
-Base URL on your machine: `http://127.0.0.1:3000`.
+Base GUI: `https://192.168.1.1/` (or the LAN IP you set).
 
-Reads are open. Creates, updates and deletes need header `X-API-Key`, same value as `API_KEY` in `.env`. Treat that as **local only**: anyone who reaches the port can list the backlog.
+## Login and wizard
 
-## Health
+`root` plus the password from the installer. The first-boot wizard can set hostname, timezone and LAN. You can skip most screens and fix them later under **System → Settings**.
 
-```bash
-curl http://127.0.0.1:3000/health
-```
+Change the default password if you still have `opnsense`.
 
-`"status":"ok"` means the process is up. It does not mean your key is valid.
+## Interfaces
 
-## List and filter
+**Interfaces → Assignments** (or console menu **1**): first NIC is usually LAN, second WAN. WAN expects DHCP from the hypervisor NAT or your upstream. LAN is static `192.168.1.1/24` unless you changed it.
 
-```bash
-curl http://127.0.0.1:3000/api/v1/tasks
-curl "http://127.0.0.1:3000/api/v1/tasks?status=todo"
-```
+Do not turn on hardware offloading in a VM (**Interfaces → Settings**) — the official virtual page asks you to disable it.
 
-`status` must be `todo`, `doing` or `done`. Anything else returns `400`.
+## Firmware
 
-Get one task: `GET /api/v1/tasks/<TASK_ID>`. Unknown id → `404`. The id must be a UUID, not `1`.
+**System → Firmware → Updates**. Same data as `GET` / `POST` `/api/core/firmware/status` (see [Firmware status](/docs/api/firmware-status)).
 
-## Create, update, delete
+## API keys (for scripts)
 
-Full snippets (cURL, JavaScript, Python) live on:
+**System → Access → Users** → pick a user → API **+**. One key per application. The secret file is a one-time download.
 
-- [POST /api/v1/tasks](/docs/api/create-task)
-- [PATCH and PUT /api/v1/tasks/\{id\}](/docs/api/update-task)
-- [DELETE /api/v1/tasks/\{id\}](/docs/api/delete-task)
+The user must have privileges for the GUI page that owns the endpoint. “Effective Privileges” on the user shows what the key can call.
 
-Minimal PATCH (PowerShell users: see the create page for `ConvertTo-Json`):
+## When to use the GUI vs curl
 
-```bash
-curl -X PATCH http://127.0.0.1:3000/api/v1/tasks/<TASK_ID> \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: change-me-now" \
-  --data-binary '{"status":"doing"}'
-```
-
-`PUT` is the same handler. Send only the fields you change.
+| Job | Where |
+| --- | --- |
+| First install, password, LAN IP | GUI or console |
+| Look at services, firmware | GUI, or [API](/docs/api/overview) |
+| Automate from a laptop | API + Basic auth |
 
 ## Errors you will actually hit
 
-| Code | When |
+| What | When |
 | --- | --- |
-| `400` | Bad JSON, empty title, or a status that is not allowed |
-| `401` | Missing or wrong `X-API-Key` |
-| `404` | Wrong path or unknown task id |
-| `500` | `API_KEY` is empty in the environment |
+| Browser certificate warning | Factory cert. Lab: proceed. Production: install a real cert. |
+| Cannot reach `.1` | You are not on the LAN network. |
+| API HTML login page | Not authenticated, or wrong privileges. |
+| Lost API secret | Create a new key. OPNsense will not show the old one. |

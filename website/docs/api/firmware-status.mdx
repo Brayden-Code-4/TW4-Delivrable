@@ -1,0 +1,51 @@
+---
+sidebar_position: 5
+title: GET /api/core/firmware/status
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# GET /api/core/firmware/status
+
+Firmware status. This is the first call in the official [how-to](https://docs.opnsense.org/development/how-tos/api.html). The generated firmware table also lists `POST` on the same command; the how-to curl is a GET.
+
+Needs Basic auth. The user needs access to **System → Firmware**.
+
+## Response `200`
+
+JSON. The how-to reads `status`, and when `status` is `ok`: `download_size`, `updates`, `upgrade_needs_reboot`. Otherwise `status_msg` may be present.
+
+<Tabs>
+<TabItem value="curl" label="cURL">
+
+```bash
+curl -k -u "$OPN_KEY:$OPN_SECRET" \
+  https://192.168.1.1/api/core/firmware/status
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+const auth = "Basic " + btoa(`${key}:${secret}`);
+const res = await fetch("https://192.168.1.1/api/core/firmware/status", {
+  headers: { Authorization: auth },
+});
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+```python
+import requests
+r = requests.get(
+    "https://192.168.1.1/api/core/firmware/status",
+    auth=(key, secret),
+    verify=False,
+)
+print(r.json())
+```
+
+</TabItem>
+</Tabs>

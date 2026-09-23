@@ -8,20 +8,20 @@ const FeatureList = [
     title: 'What',
     description: (
       <>
-        A local REST API for a writing backlog. Title plus status
-        (<code>todo</code>, <code>doing</code>, <code>done</code>). Data in{' '}
-        <code>data/tasks.json</code>. Not a hosted cloud product.
+        OPNsense is an open-source firewall on FreeBSD. GUI on{' '}
+        <code>https://192.168.1.1/</code>, REST API under <code>/api/</code>.
+        Not a Node toy API.
       </>
     ),
     to: '/docs/about',
-    label: 'About TW4',
+    label: 'About OPNsense',
   },
   {
     title: 'Who',
     description: (
       <>
-        Developers and technical writers on one machine. Script it with curl,
-        Node <code>fetch</code>, or Python <code>urllib</code>.
+        Firewall admins and writers who need a lab box: two NICs, a LAN client,
+        then curl with a key and a secret.
       </>
     ),
     to: '/docs/developer/overview',
@@ -31,8 +31,8 @@ const FeatureList = [
     title: 'Why docs',
     description: (
       <>
-        The header is <code>X-API-Key</code>, statuses are three strings, ids
-        are UUIDs. Those three details fail on a clean clone without a guide.
+        Installer user vs root, no official Docker image, Basic auth on the API.
+        Those three facts fail on a first ISO if nobody wrote them down.
       </>
     ),
     to: '/docs/api/overview',

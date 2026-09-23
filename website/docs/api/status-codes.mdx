@@ -5,18 +5,14 @@ title: Status codes
 
 # Status codes
 
-Same JSON envelope for errors: `error` (machine name) + `message` (human).
+What you actually see against a lab box:
 
-| Code | `error` | When |
-| --- | --- | --- |
-| `200` | — | GET list, GET one, PATCH/PUT, DELETE |
-| `201` | — | POST create |
-| `400` | `invalid_json` | Body is not JSON |
-| `400` | `validation_error` | Missing title, empty title, or bad `status` |
-| `400` | `invalid_query` | `?status=` is not `todo` / `doing` / `done` |
-| `401` | `unauthorized` | Missing or wrong `X-API-Key` on a write |
-| `404` | `not_found` | Unknown UUID, or path the server does not know |
-| `500` | `server_misconfigured` | `API_KEY` env is empty |
-| `500` | `internal_error` | Uncaught exception |
+| Code | When |
+| --- | --- |
+| `200` | Controller ran. Body is JSON. |
+| `401` | Missing or wrong Basic pair |
+| `403` | Authenticated but no privilege for that resource |
+| TLS error | Factory cert and you did not pass `-k` / `verify=False` |
+| HTML login page | Request never hit the API (wrong URL or no auth) |
 
-A non-UUID id on `/api/v1/tasks/{id}` is `404` with `No route for GET /api/v1/tasks/1` — the UUID regex never matches, so it is not "task missing", it is "no such route".
+POST actions often return JSON like `{"result":"saved","uuid":"..."}` (group add) or a firmware job status. Always read the body, not only the code.

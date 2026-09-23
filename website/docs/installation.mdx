@@ -3,113 +3,66 @@ sidebar_position: 2
 title: Installation
 ---
 
-# Install TW4
+# Install OPNsense
 
-How to get the API running on a machine. Pick **one** path: native (Node) or Docker.
+How to get the **platform** running. Pick **one** path: hardware (ISO/USB) or a hypervisor VM. This page is the longer install reference. First time? Use the [Quickstart](/docs/quickstart).
 
-If you never ran TW4, start with the [Quickstart](/docs/quickstart) instead. This page is the longer install reference.
+Official source for image types, checksums and the installer: [Initial Installation](https://docs.opnsense.org/manual/install.html). Official VM notes: [Virtual & Cloud](https://docs.opnsense.org/manual/virtuals.html).
 
 ## Prerequisites
 
-| Tool | Native | Docker | Version |
-| --- | --- | --- | --- |
-| Git | Yes | Yes | 2.40+ |
-| Node.js | Yes | No | 20+ |
-| npm | Yes | No | 10+ |
-| Docker Desktop | No | Yes | 24+ |
-| Docker Compose | No | Yes | v2 |
+| Item | Hardware | VM lab |
+| --- | --- | --- |
+| amd64 machine or hypervisor | Yes | Yes |
+| RAM | 2 GB+ (3 GB if you virtualize) | **3 GB** minimum |
+| Disk | 8 GB+ | 8 GB+, 16 GB is comfortable |
+| WAN + LAN | two NICs | two virtual adapters |
+| Image | dvd / vga / serial / nano | **dvd** ISO |
 
-## Native
+OPNsense publishes images for **x86-64 only**.
 
-### Clone
+## Hardware (native)
 
-```bash
-git clone https://github.com/Brayden-Code-4/TW4-Delivrable.git
-cd TW4
-```
+1. Download **dvd** or **vga** from [opnsense.org/download](https://opnsense.org/download/).
+2. Check SHA-256 against the `.sha256` file. Unpack `.bz2`.
+3. Write USB (`dd`, Etcher, Rufus) or burn the ISO.
+4. Boot the media. Live GUI: `https://192.168.1.1/` with `root` / `opnsense`.
+5. To install to disk: login `installer` / `opnsense`, then UFS or ZFS, set root password, reboot.
 
-### Create `.env`
+`nano` images are for embedded cards (serial). Full images (dvd/vga/serial) give you the live environment and the installer.
 
-```bash
-cp .env.example .env
-```
+## Virtual lab
 
-PowerShell: `Copy-Item .env.example .env`
+OPNsense does **not** ship Docker. Hypervisors that support FreeBSD are the lab path: VirtualBox, VMware, Hyper-V, KVM.
 
-Set `API_KEY`. Change `PORT` only if 3000 is already used.
+| Setting | Suggested value |
+| --- | --- |
+| RAM | 3072 MB |
+| Disk | 16 GB |
+| NIC 1 | LAN |
+| NIC 2 | WAN (DHCP) |
 
-### Run
+Low RAM often fails the installer with a file-copy error. Official virtual page: minimum **3 GB**.
 
-```bash
-npm install
-npm start
-```
+Optional plugins after install: `os-virtualbox`, `os-vmware`, `os-qemu-guest-agent` under **System → Firmware → Plugins**.
 
-Check:
+## After install
 
-```bash
-curl http://127.0.0.1:3000/health
-```
+| What | Default |
+| --- | --- |
+| LAN | `192.168.1.1/24`, DHCP server `.100–.200` |
+| WAN | DHCP client |
+| GUI | `https://192.168.1.1/` |
+| Users | `root` / password you set (live ISO default is `opnsense`) |
 
-Stop with `Ctrl+C`.
-
-## Docker
-
-You do not need Node on the host.
-
-```bash
-git clone https://github.com/Brayden-Code-4/TW4-Delivrable.git
-cd TW4
-cp .env.example .env
-docker compose up --build
-```
-
-Compose maps port `3000`, keeps tasks in the `tw4_data` volume, and checks `/health` every 30s.
-
-Then:
-
-```bash
-curl http://127.0.0.1:3000/health
-docker compose ps
-```
-
-The `tw4-api` container should show as running. The API listens on port 3000 inside the container too.
-
-GitHub Actions builds this image and curls `/health` on every push (`ci.yml`). Run `docker compose up --build` on a machine that has Docker before you demo it.
-
-Without Compose, after a local build:
-
-```bash
-docker build -t tw4-api:1.0.0 .
-docker run --rm -p 3000:3000 -e API_KEY=change-me-now --name tw4-api tw4-api:1.0.0
-```
-
-Stop Compose with `Ctrl+C`, then `docker compose down`.
-
-## Limits
-
-- GET list and GET one task have no auth. Local machine only.
-- `data/tasks.json` has no lock. One process.
-- `API_KEY=change-me-now` is an example, not a secret.
-
-## Environment
-
-Same names as in `.env.example`:
-
-| Name | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `HOST` | No | `0.0.0.0` | Keep this in Docker |
-| `PORT` | No | `3000` | Host port for Compose too |
-| `API_KEY` | For writes | `change-me-now` | Header `X-API-Key` |
-| `DATA_FILE` | No | `./data/tasks.json` | `/app/data/tasks.json` in Docker |
-| `LOG_LEVEL` | No | `info` | `error`, `warn`, `info`, `debug` |
-| `NODE_ENV` | No | `development` | Compose sets `production` |
+Assign interfaces on the console if the first NIC is not LAN. Console menu option **1** is Assign interfaces.
 
 ## If it fails
 
 | What you see | What to try |
 | --- | --- |
-| `connection refused` on `/health` | The process is not listening. Check the start logs. |
-| `401 unauthorized` | Header key ≠ `API_KEY` in `.env` |
-| Port already allocated | Change `PORT` in `.env` and restart |
-| Docker not found | Install Docker Desktop, or use the native path |
+| GUI timeout | Host not on LAN. Check Host-only / bridge. |
+| File copy failed in installer | Raise VM RAM to 3 GB+ |
+| Still on the live ISO after reboot | Detach the ISO |
+| `installer` login fails | You imported a config; password is that root password. Or run `opnsense-installer` from root shell (menu 8) |
+| API returns the login HTML | Key/secret missing, or user has no privilege for that page |

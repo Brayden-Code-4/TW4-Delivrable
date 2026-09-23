@@ -1,266 +1,123 @@
 openapi: 3.0.3
 info:
-  title: TW4 API
+  title: OPNsense API (subset)
   version: "1.0.0"
   description: >
-    Local REST API for documentation tasks. Not a hosted cloud product.
-    Reads are open. Writes need the X-API-Key header.
+    Lab subset used in this handbook. Full generated index:
+    https://docs.opnsense.org/development/api.html
+    Authentication is HTTP Basic (API key + secret).
   license:
-    name: MIT
+    name: Documentation MIT; OPNsense is BSD-2-Clause
 servers:
-  - url: http://127.0.0.1:3000
-    description: Local process (npm start or Docker)
+  - url: https://192.168.1.1
+    description: Default LAN after a fresh install
 tags:
-  - name: health
-  - name: tasks
+  - name: firmware
+  - name: system
+  - name: service
+  - name: auth
 paths:
-  /health:
+  /api/core/firmware/status:
     get:
-      tags: [health]
-      summary: Liveness
-      operationId: getHealth
+      tags: [firmware]
+      summary: Firmware status (official how-to)
+      operationId: getFirmwareStatus
+      security:
+        - basic: []
       responses:
         "200":
-          description: Process is up
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Health"
-  /api/v1/tasks:
-    get:
-      tags: [tasks]
-      summary: List tasks
-      operationId: listTasks
-      parameters:
-        - in: query
-          name: status
-          schema:
-            $ref: "#/components/schemas/Status"
-      responses:
-        "200":
-          description: List
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TaskList"
-        "400":
-          $ref: "#/components/responses/BadRequest"
+          description: JSON firmware status
+        "401":
+          description: Bad or missing Basic auth
+  /api/core/firmware/update:
     post:
-      tags: [tasks]
-      summary: Create a task
-      operationId: createTask
+      tags: [firmware]
+      summary: Start a package update
+      operationId: postFirmwareUpdate
       security:
-        - apiKey: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TaskWrite"
+        - basic: []
       responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TaskWrapper"
-        "400":
-          $ref: "#/components/responses/BadRequest"
+        "200":
+          description: Update job accepted
         "401":
-          $ref: "#/components/responses/Unauthorized"
-        "500":
-          $ref: "#/components/responses/ServerError"
-  /api/v1/tasks/{id}:
-    parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-          format: uuid
+          description: Bad or missing Basic auth
+  /api/core/system/status:
     get:
-      tags: [tasks]
-      summary: Get one task
-      operationId: getTask
+      tags: [system]
+      summary: System status
+      operationId: getSystemStatus
+      security:
+        - basic: []
       responses:
         "200":
-          description: Task
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TaskWrapper"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    patch:
-      tags: [tasks]
-      summary: Update a task
-      operationId: patchTask
+          description: JSON system status
+        "401":
+          description: Bad or missing Basic auth
+  /api/core/service/search:
+    get:
+      tags: [service]
+      summary: List services (generated table)
+      operationId: getServiceSearch
       security:
-        - apiKey: []
+        - basic: []
+      responses:
+        "200":
+          description: Service list
+    post:
+      tags: [service]
+      summary: List services (GUI grid body)
+      operationId: postServiceSearch
+      security:
+        - basic: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskPatch"
+              type: object
+              properties:
+                current:
+                  type: integer
+                  example: 1
+                rowCount:
+                  type: integer
+                  example: 7
+                searchPhrase:
+                  type: string
       responses:
         "200":
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TaskWrapper"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    put:
-      tags: [tasks]
-      summary: Update a task (same handler as PATCH)
-      operationId: putTask
+          description: Grid JSON (total, rows)
+  /api/auth/group/add/:
+    post:
+      tags: [auth]
+      summary: Create a group
+      operationId: postAuthGroupAdd
       security:
-        - apiKey: []
+        - basic: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskPatch"
+              type: object
+              properties:
+                group:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    priv:
+                      type: string
+                    member:
+                      type: string
       responses:
         "200":
-          description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TaskWrapper"
-        "400":
-          $ref: "#/components/responses/BadRequest"
+          description: result saved + uuid
         "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
-    delete:
-      tags: [tasks]
-      summary: Delete a task
-      operationId: deleteTask
-      security:
-        - apiKey: []
-      responses:
-        "200":
-          description: Deleted
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeleteResult"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
+          description: Bad or missing Basic auth
 components:
   securitySchemes:
-    apiKey:
-      type: apiKey
-      in: header
-      name: X-API-Key
-  schemas:
-    Status:
-      type: string
-      enum: [todo, doing, done]
-    Health:
-      type: object
-      properties:
-        status:
-          type: string
-          example: ok
-        service:
-          type: string
-          example: tw4
-        environment:
-          type: string
-        uptime_seconds:
-          type: number
-    Task:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        title:
-          type: string
-        status:
-          $ref: "#/components/schemas/Status"
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    TaskWrite:
-      type: object
-      required: [title]
-      properties:
-        title:
-          type: string
-        status:
-          $ref: "#/components/schemas/Status"
-    TaskPatch:
-      type: object
-      properties:
-        title:
-          type: string
-        status:
-          $ref: "#/components/schemas/Status"
-    TaskWrapper:
-      type: object
-      properties:
-        data:
-          $ref: "#/components/schemas/Task"
-    TaskList:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: "#/components/schemas/Task"
-        count:
-          type: integer
-    DeleteResult:
-      type: object
-      properties:
-        data:
-          $ref: "#/components/schemas/Task"
-        deleted:
-          type: boolean
-          example: true
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-  responses:
-    BadRequest:
-      description: Invalid JSON, validation, or query
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    Unauthorized:
-      description: Missing or wrong X-API-Key
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    NotFound:
-      description: Unknown UUID or unknown path
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    ServerError:
-      description: API_KEY empty or unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
+    basic:
+      type: http
+      scheme: basic
+      description: Username is the API key. Password is the API secret.

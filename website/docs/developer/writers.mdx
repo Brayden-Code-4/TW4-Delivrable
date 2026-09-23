@@ -5,28 +5,22 @@ title: Working with writers
 
 # Working with writers
 
-Docs and code live in the same repo (`website/docs` vs `src/`). A writer should be able to run [Quickstart](/docs/quickstart) without asking you for a Zoom.
+Docs for this handbook live in `website/docs`. The product lives in `opnsense/core`. A writer should finish the [Quickstart](/docs/quickstart) without a call.
 
 ## What to send when a route changes
 
-In the PR description, or a short comment:
+- method + full `/api/...` path
+- Basic auth (yes)
+- one real request (from DevTools → Copy as cURL)
+- one real response
+- privilege / GUI page that owns it
 
-- method + path
-- auth or not
-- one real request
-- one real response (copy from your terminal)
-- status codes you added or removed
-
-A screenshot of Postman without the JSON is not enough.
+A screenshot of the dashboard with no URL is not enough.
 
 ## What writers will ask
 
-- "Is the key in the header or in the query?" → header `X-API-Key`
-- "Can I use `wip` as status?" → no, only `todo` / `doing` / `done`
-- "Why is my GET 404 with id `1`?" → the id must be a UUID
+- "Is the key a header?" → no, HTTP Basic user/password
+- "Can I Docker this?" → not officially
+- "Why is my GET an HTML page?" → not authenticated, or not an API user
 
 If you do not know, say so. Do not invent a status code.
-
-## Review
-
-Writers review `website/docs/**`. You review `src/**`. Cross-read the snippets. A command that 401s on a clean clone is a bug in the page, not "the reader is wrong".

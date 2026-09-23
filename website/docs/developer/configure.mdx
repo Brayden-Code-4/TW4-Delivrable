@@ -3,41 +3,38 @@ sidebar_position: 3
 title: Configure
 ---
 
-# Configure the client and the server
+# Configure the client and the appliance
 
-Two sides: the process (`src/server.js` + `.env`) and your script (`TW4_URL`, `TW4_API_KEY`).
+Two sides: OPNsense (users, privileges, certificate) and your script (`OPN_URL`, `OPN_KEY`, `OPN_SECRET`).
 
-## Server (`.env`)
+## On the firewall
 
-Copy `.env.example`. `npm start` loads the file if the variable is not already in the environment.
+| Place | What |
+| --- | --- |
+| **System → Access → Users** | Create the API key. Secret is a one-time file. |
+| Effective Privileges | Must include the GUI page for that `/api/` module |
+| TLS | Factory cert, or install a real one under **System → Trust** |
 
-| Name | Default | Used for |
-| --- | --- | --- |
-| `HOST` | `0.0.0.0` | Bind address. Keep `0.0.0.0` in Docker. |
-| `PORT` | `3000` | Listen port |
-| `API_KEY` | `change-me-now` | Compared to header `X-API-Key` |
-| `DATA_FILE` | `./data/tasks.json` | JSON store |
-| `LOG_LEVEL` | `info` | `error` / `warn` / `info` / `debug` |
-| `NODE_ENV` | `development` | Echoed on `/health` |
+One key per application. If the secret is gone, add a new key. OPNsense does not keep the secret for a second download.
 
-Replace the example key with a long random string before you share a machine. Compose reads `API_KEY`, `PORT` and `LOG_LEVEL` from `.env`.
-
-Header name is `X-API-Key`. Node lowercases it to `x-api-key`. Do not send `Authorization: Bearer` — the server ignores it.
-
-## Your app
-
-Suggested names so they do not clash with the server's own `API_KEY` if both run in the same shell:
+## In your shell
 
 ```bash
-export TW4_URL=http://127.0.0.1:3000
-export TW4_API_KEY=change-me-now
+export OPN_URL=https://192.168.1.1
+export OPN_KEY='paste-key'
+export OPN_SECRET='paste-secret'
 ```
 
 PowerShell:
 
 ```powershell
-$env:TW4_URL = "http://127.0.0.1:3000"
-$env:TW4_API_KEY = "change-me-now"
+$env:OPN_URL = "https://192.168.1.1"
+$env:OPN_KEY = "paste-key"
+$env:OPN_SECRET = "paste-secret"
 ```
 
-If `API_KEY` is empty on the server, writes return `500` (`server_misconfigured`). That is intentional. The API does not fall back to "open writes".
+Do not commit those values. They are not in this repo.
+
+## TLS
+
+`curl -k` and `verify=False` are for a laptop lab. On a shared network, put a proper certificate on the box and verify it.
